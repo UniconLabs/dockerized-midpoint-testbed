@@ -1,0 +1,56 @@
+version: "3.1"
+
+services:
+  #This handles all of the http request to simple cert issues and both the SP and IdP can share the same ports.
+  httpd-proxy:
+    build: ./httpd-proxy/
+    networks:
+     - front
+     - back
+    ports:
+     - "80:80"
+     - "443:443"
+   
+  ldap:
+    build: ./ldap/
+    networks:
+     - back
+
+  midpoint:
+    build: ./midpoint/
+    depends_on: 
+     - mysql
+#    environment:
+#     - JETTY_MAX_HEAP=64m
+#     - JETTY_BROWSER_SSL_KEYSTORE_PASSWORD=password
+#     - JETTY_BACKCHANNEL_SSL_KEYSTORE_PASSWORD=password
+    networks:
+     - back
+#    secrets:
+#     - source: idp_backchannel
+
+  mysql:
+    image: mysql:8.0
+    environment:
+     - MYSQL_ROOT_PASSWORD=password
+     - MYSQL_DATABASE=midpoint
+     - MYSQL_USER=midpoint
+     - MYSQL_PASSWORD=password
+    networks:
+     - back
+#    secrets:
+#     - source: idp_backchannel
+#     - source: idp_browser
+
+networks:
+  front:
+    driver: bridge
+  back:    
+    driver: bridge
+
+#secrets:
+#  idp_backchannel:
+#    file: ./secrets/idp/idp-backchannel.p12
+#  idp_browser:
+#    file: ./secrets/idp/idp-browser.p12
+  
