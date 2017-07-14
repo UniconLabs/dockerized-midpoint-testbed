@@ -42,6 +42,28 @@ services:
 #     - source: idp_backchannel
 #     - source: idp_browser
 
+  phpldapadmin:
+    depends_on: 
+     - ldap
+    environment:
+     - LDAP_SERVER_HOST=ldap
+     - UNIQUE_ATTRS=uid,cn
+     
+    image: dinkel/phpldapadmin
+    networks:
+     - back
+
+  phpmyadmin:
+    depends_on: 
+     - mysql
+    environment:
+     - PMA_ABSOLUTE_URI=phpmyadmin
+     - PMA_HOST=mysql
+    image: phpmyadmin/phpmyadmin:4.7
+    networks:
+     - back
+
+
 networks:
   front:
     driver: bridge
